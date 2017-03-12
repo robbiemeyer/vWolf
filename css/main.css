@@ -1,0 +1,145 @@
+body {
+    background-color: #d5c4b4;
+    color: #552200;
+    font-family: sans-serif;
+    font-size: 16px;
+}
+h2 {
+    font-size: 1.2em;
+    margin-bottom:0.3em;
+}
+
+dave{
+    border-style: solid;
+    border-width: 1px;
+    margin: 9px;
+    padding: 5px;
+}
+
+/*Should be changed*/
+#loginLogo{
+    width:70%;
+    max-width:300px;
+    display: block;
+    margin: 1em auto;
+}
+
+#loginscreen {
+    padding-top: 5%;
+}
+
+.roomLabel{
+    background-color: white;
+    color: grey;
+    display: inline-block;
+    box-sizing: border-box;
+    border-radius: 3px;
+    border-color: #784421;
+    border-style: solid;
+    border-width: 1.5px;
+    padding-left: 1.5%;
+    min-height: 2.4em;
+    line-height: 2.4em;
+    width: 100%;
+    margin: 0.5em auto;
+    font-family: 'sans serif';
+    max-width: 400px;
+    display: block;
+}
+
+.roomInput{
+    background-color: white;
+    outline: none;
+    border: none;
+    width: 70%;
+}
+
+.actionButton{
+    width: 100%;
+    margin: auto;
+    font-family: 'sans serif';
+    max-width: 400px;
+    display: block;
+    height: 2.8em;
+    
+    background-color: #784421;
+    color: white;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: #552200;
+    border-width: 1.5px;
+}
+
+.actionButton:active{
+    background-color: #552200;
+}
+.actionButton:hover{
+    cursor:pointer;
+}
+
+#gamescreen{
+    display:none;
+}
+
+#banner{
+    border-bottom-width: 1.5px;
+    border-bottom-style: solid;
+    height: 35px;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+#bannerLogo{
+    height: 30px;    
+    float: left;
+    vertical-align: middle;
+}
+
+#currentRoom{
+    vertical-align: middle;
+    text-height: 30px;
+    position: relative;
+    top: 5px;
+    float: right;
+}
+
+#activeList{
+    width: 102%;
+    position: relative;
+    left: -1%;
+}
+
+.playername{
+    display: inline-block;
+    box-sizing: border-box;
+    width: 48%;
+    margin: 1%;
+    padding: 0.5em;
+    border-color: #784421;
+    border-style: solid;
+    border-width: 1.5px;
+    border-radius: 3px;
+}
+
+
+@media all and (min-width: 620px){
+
+    body {
+        width: 80%;
+        margin: auto;
+    }
+
+    .playername{
+        width: 23%;
+    }
+
+}
+
+@media all and (min-width: 920px){
+
+    body {
+        width: 60%;
+        margin: auto;
+    }
+
+}

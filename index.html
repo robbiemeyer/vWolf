@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html> 
+	<head>
+		<title>Werewolf</title>
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+		<link rel="stylesheet" type="text/css" href="./css/main.css"/>
+
+        <script src="https://www.gstatic.com/firebasejs/3.6.8/firebase.js"></script>
+		<script type="text/javascript" src="js/common.js"></script>
+		<script type="text/javascript" src="js/start.js"></script>
+		<script type="text/javascript" src="js/dayPhase.js"></script>
+		<script type="text/javascript" src="js/nightPhase.js"></script>
+
+	</head>
+	<body>
+        <!-- <button onclick="destroyRoom()"> Destroy Room </button> -->
+        <div id="loginscreen">
+            <img src="img/logo.png" alt="vWolf" id="loginLogo"></img>
+             <form action="javascript:enterRoom();">
+                <label class="roomLabel"> UserID:
+                <input type='text' name ='user' id="userBox" class="roomInput" required/> 
+                </label>
+
+                <label class="roomLabel"> RoomID:
+                    <input type='text' name ='room' id="roomBox" class="roomInput" required/> 
+                </label>
+
+                <input type="submit" value="Enter Room" class="actionButton"/>
+            </form>
+        </div>
+
+        <div id="gamescreen">
+            <!-- Header -->
+            <div id="banner">
+                <img src="img/banner-logo.png" alt="vWolf" id="bannerLogo"></img>
+                <span id="currentRoom">Unknown</span>
+                <div style="clear:both;"></div>
+            </div>
+            <!-- Game Content -->
+            <h2> Game Settings </h2>
+            <!-- Players -->
+            <h2> Players in Room </h2>
+            <div id="activeList">
+                no names yet.
+            </div>
+
+
+            <div id="dayVoteBoxes">
+                no boxes
+            </div>
+
+            <div id="nightBox">
+                The Night has not begun
+            </div>
+            <!-- Buttons -->
+            <button class="actionButton" id="readyButton" onclick="becomeReady(this)">Ready?</button>
+        </div>
+
+        <div id="gameLog">
+        </div>
+    </body>
+</html>
