@@ -1,15 +1,21 @@
 function showDayPhase(){
+    document.getElementById("pregamescreen").style.display = "none";
+    document.getElementById("dayscreen").style.display = "block";
     //checkGameEnd();
-    var buttonBox = document.getElementById("dayVoteBoxes");
-    buttonBox.innerHTML = null;
+    //var buttonBox = document.getElementById("dayVoteBoxes");
+    //buttonBox.innerHTML = null;
 
-    for (var i in activePlayers){
-        buttonBox.innerHTML += "<button id='button-" + i +"' onclick='dayVote(this)'>" + activePlayers[i].name + "</button>";
-    }
+    //for (var i in activePlayers){
+    //    buttonBox.innerHTML += "<button id='button-" + i +"' onclick='dayVote(this)'>" + activePlayers[i].name + "</button>";
+    //}
     //show voting buttons
 }
 
-function dayVote(button){
+function selectVote(radioButton){
+    console.log(radioButton.value);
+}
+
+function dayVote(){
     var loser = {index: null, count: 0};
 
     var dayVoteRef = roomRef.child("dayVote/" + playerID);
@@ -23,7 +29,7 @@ function dayVote(button){
         if (numReadyPlayers === numPlayers){
             roomRef.child("dayVote").off();
             dayVoteRef.onDisconnect().cancel();
-            button.parentElement.innerHTML = "";
+            //button.parentElement.innerHTML = "";
             var voteArray = [];
             for (var i in snapshot.val()){
                 (voteArray[snapshot.val()[i]] === undefined ) ? voteArray[snapshot.val()[i]] = 1 : voteArray[snapshot.val()[i]]++;
@@ -54,8 +60,11 @@ function dayVote(button){
             console.log("Error gettting the number of ready players: " + error.code);
     });
 
-    dayVoteRef.set(button.id.slice(7));
+//    console.log(document.getElementsByName();
+//    dayVoteRef.set(button.id.slice(7));
+    dayVoteRef.set(getRadioPlayerIndex());
     dayVoteRef.onDisconnect().remove();
+
 }
 
 

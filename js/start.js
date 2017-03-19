@@ -1,5 +1,4 @@
 function enterRoom (){
-    console.log("Entering Room");
     //Get IDs
     playerID = document.getElementById("userBox").value;
     roomID = document.getElementById("roomBox").value;
@@ -16,7 +15,6 @@ function enterRoom (){
         //Listen for list of active players
         roomRef.child("players").on("value", function(snapshot) {
             activePlayers = [];
-            if (snapshot.val() !== null) {
                 for (var i in snapshot.val()){
                     activePlayers.push({name:snapshot.val()[i], key: i});
                 }
@@ -25,10 +23,47 @@ function enterRoom (){
                 numPlayers = activePlayers.length;
                 console.log("Numplayers = " + numPlayers);
                 updateNames(activePlayers);
+            roleNum.villager = numPlayers - roleNum.wolf - roleNum.seer;
+            var readyButton = document.getElementById("readyButton");
+            if (roleNum.villager < 0){
+                readyButton.setAttribute("disabled", "true");
+                if (readyRef)
+                    getReady(readyButton);
             }
+            else
+                readyButton.removeAttribute("disabled");
         }, function(error) {
             console.log("Error gettting the names of the players: " + error.code);
         });
+
+        //Listen for number of each role
+        roomRef.child("roleSettings").on("value", function(snapshot) {
+            for (var role in snapshot.val()){
+                var checkRole = snapshot.val()[role]; 
+                if (checkRole <= 0)
+                    document.getElementById(role + "minus").setAttribute("disabled", true);
+                else
+                    document.getElementById(role + "minus").removeAttribute("disabled");
+
+                if (checkRole !== null){
+                    roleNum[role] = checkRole;
+                    document.getElementById(role + "NumDisplay").innerHTML = roleNum[role];
+                }
+            }
+            roleNum.villager = numPlayers - roleNum.wolf - roleNum.seer;
+            if (roleNum.villager < 0){
+                var readyButton = document.getElementById("readyButton");
+                readyButton.setAttribute("disabled", "true");
+                if (readyRef)
+                    getReady(readyButton);
+            }
+            else {
+                document.getElementById("readyButton").removeAttribute("disabled");
+            }
+        }, function(error) {
+            console.log("Error gettting the roles of the players: " + error.code);
+        });
+
 
         //Create current player
         playerRef.set(playerID);
@@ -43,45 +78,46 @@ function enterRoom (){
     }
 }
 
-function becomeReady(button){
+function getReady(button){
     if (button.innerHTML == "Ready?"){
         button.innerHTML = "Waiting";
 
-        button.style.backgroundColor = "#552200";
+        button.classList.add("holdActive");
 
         readyRef = waitForAll(roomRef.child("readyPlayers"),numPlayers, playGame);
-        //roomRef.child("readyPlayers").on("value", function(snapshot) {
-        //    numReadyPlayers = 0;
-        //    for (var i in snapshot.val())
-        //        numReadyPlayers += 1;
-
-        //    console.log(numReadyPlayers + " ready players");
-        //    if (numReadyPlayers === numPlayers){
-        //        roomRef.child("readyPlayers").off();
-        //        playerReadyRef.onDisconnect().cancel();
-        //        playGame()
-        //    }
-        //}, function(error) {
-        //    console.log("Error gettting the number of ready players: " + error.code);
-        //});
-
 
     } else if (button.innerHTML == "Waiting"){
+        //Need to catch exception here
         button.innerHTML = "Ready?";
-        button.style.backgroundColor = "#784421";
+        button.classList.remove("holdActive");
 
         roomRef.child("readyPlayers").off();
         readyRef.onDisconnect().cancel();
         readyRef.remove();
+        readyRef = false;
     }
 }
 
+function changeRoleCount(increment, role){
+    if (roleNum[role] === 0 )
+        document.getElementById(role + "minus").removeAttribute("disabled");
+    roleNum[role] += increment; 
+    document.getElementById(role + "NumDisplay").innerHTML = roleNum[role];
+    roleNum.villager -= increment;
+    roomRef.child("roleSettings/" + role).transaction(function(currentVal){
+        currentVal += increment;
+        return currentVal;
+    });
+    if (roleNum[role] === 0 )
+        document.getElementById(role + "minus").setAttribute("disabled", true);
+}
+
 function assignRoles(){
-    var numVillagers = numPlayers - numWolf;
+    var numVillagers = numPlayers - roleNum.wolf - roleNum.seer;
 
     var assignRoleArray = [];
 
-    for (i = 0; i < numWolf; i++)
+    for (i = 0; i < roleNum.wolf; i++)
         assignRoleArray.push("werewolf");
     for (i = 0; i < numVillagers; i++)
         assignRoleArray.push("villager");

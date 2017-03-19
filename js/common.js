@@ -11,18 +11,22 @@ var roomID;
 var playerID;
 var roomRef;
 var playerRef;
-var readyRef;
+var readyRef = false;
 
-var lettersandnumbers = /\w+/;
+//var lettersandnumbers = /\w+/;
 var activePlayers;
 var numPlayers = 1;
 
 var myRole;
 var amHost = false;
 
-var pendingFunction = function(){};
+//var pendingFunction = function(){};
 
-var numWolf = 1
+var roleNum = {
+    villager: numPlayers,
+    wolf: 0,
+    seer: 0
+};
 
 function waitForAll (reference, num, action){
     var playerReadyRef;
@@ -50,7 +54,6 @@ function waitForAll (reference, num, action){
     return playerReadyRef
 }
 
-
 function shuffle (array){
     var currentIndex = array.length;
     var randomIndex;
@@ -68,9 +71,41 @@ function shuffle (array){
     return array;
 }
 
+function updateNames(activePlayers) {
+    activeBox = document.getElementById("activeList")
+    radioBox = document.getElementById("radioBox");
+
+    activeBox.innerHTML = null;
+    radioBox.innerHTML = null;
+    for (var i in activePlayers) {
+        document.getElementById("activeList").innerHTML += "<div class='playername'>" + activePlayers[i].name + "</div>";
+        radioBox.innerHTML += "<div class=playername><input type=radio class='voteRadio' name='target' id=" + i + "radio value=" + i +" ><label class=radiolabel for=" + i + "radio >" + activePlayers[i].name + "</label></div>";
+    }
+    //To clear the buttons, can change the hidden button to be active
+    radioBox.innerHTML += "<input type=radio name='target' value='none' id='noRadio'>";
+}
+
+function getRadioPlayerIndex(){
+    var radioButtons = document.getElementsByClassName("voteRadio");
+    var selected = "none";
+    for (var i = 0; i < radioButtons.length; i++){
+        if (radioButtons[i].checked){
+            selected = radioButtons[i].value;
+            break;
+        }
+    }
+    return selected;
+}
+
+function resetRadioButtons(){
+    document.getElementById("noRadio").checked = true;
+    return true;
+}
+
 function addToLog(item){
     var log = document.getElementById("gameLog");
     log.innerHTML += "<div class='logitem'>" + item + "</div>";
+    return log.innerHTML;
 }
 
 function leaveGame () {
@@ -78,16 +113,11 @@ function leaveGame () {
     addToLog("You have left the game");
     playerRef.onDisconnect().cancel();
     playerRef.remove();
+    return true;
 }
 
-function destroyRoom (){
-    roomRef.child("players").set({Status: {name: "no names yet"}});
-    roomRef.remove();
-}
+//function destroyRoom (){
+//    roomRef.child("players").set({Status: {name: "no names yet"}});
+//    roomRef.remove();
+//}
 
-function updateNames(activePlayers) {
-    document.getElementById("activeList").innerHTML = null;
-    for (var i in activePlayers) {
-        document.getElementById("activeList").innerHTML += "<span class='playername'>" + activePlayers[i].name + "</span>";
-    }
-}

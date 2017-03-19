@@ -38,24 +38,44 @@
                 <span id="currentRoom">Unknown</span>
                 <div style="clear:both;"></div>
             </div>
+
             <!-- Game Content -->
-            <h2> Game Settings </h2>
-            <!-- Players -->
-            <h2> Players in Room </h2>
-            <div id="activeList">
-                no names yet.
+            <div id="pregamescreen">
+                <h2> Game Settings </h2>
+                <div>
+                    <button id="wolfminus" class="decbutton" onclick="changeRoleCount(-1, 'wolf')" disabled>-</button>
+                    <span id="wolfNumDisplay">0</span>
+                    <button id="wolfplus" class="incbutton" onclick="changeRoleCount(1, 'wolf')">+</button>
+                    Werewolves
+                </div>
+
+                <!-- Players -->
+                <h2> Players in Room </h2>
+                <div id="activeList">
+                    no names yet.
+                </div>
+
+                <button class="actionButton" id="readyButton" onclick="getReady(this)">Ready?</button>
             </div>
 
+            <div id="dayscreen" style="display:none">
+                <h2>Who do you think is a Werewolf?</h3>
+                <div id="radioBox">
+                    no radio buttons
+                </div>
+                <button class="actionButton" id="dayVoteButton" onclick="dayVote()">Vote</button>
+            </div>
 
+            <!--
             <div id="dayVoteBoxes">
                 no boxes
             </div>
+            -->
 
             <div id="nightBox">
                 The Night has not begun
             </div>
             <!-- Buttons -->
-            <button class="actionButton" id="readyButton" onclick="becomeReady(this)">Ready?</button>
         </div>
 
         <div id="gameLog">
