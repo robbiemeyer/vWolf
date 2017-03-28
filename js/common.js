@@ -6,53 +6,25 @@ var config = {
 };
 firebase.initializeApp(config);
 
+//Possibly create other function to hold html interactions
+
 // IDs and References (Should be set by user)
-var roomID;
-var playerID;
-var roomRef;
-var playerRef;
-var readyRef = false;
+var roomRef = null;
+var playerRef = null;
 
-//var lettersandnumbers = /\w+/;
-var activePlayers;
-var numPlayers = 1;
+var activePlayers = new Array();
 
-var myRole;
-var amHost = false;
-
-//var pendingFunction = function(){};
+var me = {
+    name: null,
+    role:  "unassigned",
+    amHost: false
+};
 
 var roleNum = {
-    villager: numPlayers,
+    villager: activePlayers.length,
     wolf: 0,
     seer: 0
 };
-
-function waitForAll (reference, num, action){
-    var playerReadyRef;
-    reference.on("value", function(snapshot) {
-        var numReadyPlayers = 0;
-        for (var i in snapshot.val())
-            numReadyPlayers += 1;
-
-        console.log(numReadyPlayers + " ready players");
-        if (numReadyPlayers === num){
-            reference.off();
-            playerReadyRef.onDisconnect().cancel();
-            if (amHost)
-                reference.remove();
-            action()
-        }
-    }, function(error) {
-        console.log("Error gettting the number of ready players: " + error.code);
-    });
-
-    playerReadyRef = reference.push();
-    playerReadyRef.onDisconnect().remove();
-    playerReadyRef.set(playerID);
-
-    return playerReadyRef
-}
 
 function shuffle (array){
     var currentIndex = array.length;
@@ -82,12 +54,12 @@ function updateNames(activePlayers) {
         radioBox.innerHTML += "<div class=playername><input type=radio class='voteRadio' name='target' id=" + i + "radio value=" + i +" ><label class=radiolabel for=" + i + "radio >" + activePlayers[i].name + "</label></div>";
     }
     //To clear the buttons, can change the hidden button to be active
-    radioBox.innerHTML += "<input type=radio name='target' value='none' id='noRadio'>";
+    radioBox.innerHTML += "<input type=radio name='target' value='$null' id='noRadio'>";
 }
 
 function getRadioPlayerIndex(){
     var radioButtons = document.getElementsByClassName("voteRadio");
-    var selected = "none";
+    var selected = "$null";
     for (var i = 0; i < radioButtons.length; i++){
         if (radioButtons[i].checked){
             selected = radioButtons[i].value;
@@ -107,17 +79,4 @@ function addToLog(item){
     log.innerHTML += "<div class='logitem'>" + item + "</div>";
     return log.innerHTML;
 }
-
-function leaveGame () {
-    //change to dialog that shows
-    addToLog("You have left the game");
-    playerRef.onDisconnect().cancel();
-    playerRef.remove();
-    return true;
-}
-
-//function destroyRoom (){
-//    roomRef.child("players").set({Status: {name: "no names yet"}});
-//    roomRef.remove();
-//}
 

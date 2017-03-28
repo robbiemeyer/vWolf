@@ -8,6 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="./css/main.css"/>
 
         <script src="https://www.gstatic.com/firebasejs/3.6.8/firebase.js"></script>
+		<script type="text/javascript" src="js/dataManager.js"></script>
 		<script type="text/javascript" src="js/common.js"></script>
 		<script type="text/javascript" src="js/start.js"></script>
 		<script type="text/javascript" src="js/dayPhase.js"></script>
@@ -36,16 +37,15 @@
             <div id="banner">
                 <img src="img/banner-logo.png" alt="vWolf" id="bannerLogo"></img>
                 <span id="currentRoom">Unknown</span>
-                <div style="clear:both;"></div>
             </div>
 
             <!-- Game Content -->
             <div id="pregamescreen">
                 <h2> Game Settings </h2>
                 <div>
-                    <button id="wolfminus" class="decbutton" onclick="changeRoleCount(-1, 'wolf')" disabled>-</button>
+                    <button id="wolfminus" class="decbutton" onclick="changeRoleCountByButton('wolf', -1)" disabled>-</button>
                     <span id="wolfNumDisplay">0</span>
-                    <button id="wolfplus" class="incbutton" onclick="changeRoleCount(1, 'wolf')">+</button>
+                    <button id="wolfplus" class="incbutton" onclick="changeRoleCountByButton('wolf', 1)">+</button>
                     Werewolves
                 </div>
 
@@ -76,6 +76,7 @@
                 The Night has not begun
             </div>
             <!-- Buttons -->
+            <button class="actionButton" id="nightWolfButton" onclick="wereVote()">Vote</button>
         </div>
 
         <div id="gameLog">

@@ -1,79 +1,42 @@
+var dataStore;
+
 function enterRoom (){
     //Get IDs
-    playerID = document.getElementById("userBox").value;
-    roomID = document.getElementById("roomBox").value;
+    var roomID = document.getElementById("roomBox").value;
+    var playerID = document.getElementById("userBox").value;
 
-    if (/\w+/.test(playerID) && /\w+/.test(roomID)){
+    //TODO: Should be function to check if valid
+    
+    if (/^\w+$/.test(playerID) && /^\w+$/.test(roomID)){
+
+        firebase.auth().signInAnonymously().catch(function(error) {
+            console.log("Could not sign in to database: " +  error.code);
+        });
+
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user)
+                dataStore = new dataManager(playerID, roomID);
+        });
+
 
         //Create references
-        roomRef = firebase.database().ref(roomID);
-        playerRef = roomRef.child("players").push();
+        //roomRef = firebase.database().ref(roomID);
+        //playerRef = roomRef.child("players").push();
 
         //Set-up disconnect
-        playerRef.onDisconnect().remove();
 
         //Listen for list of active players
-        roomRef.child("players").on("value", function(snapshot) {
-            activePlayers = [];
-                for (var i in snapshot.val()){
-                    activePlayers.push({name:snapshot.val()[i], key: i});
-                }
-                if (playerID === activePlayers[0].name)
-                    amHost = true;
-                numPlayers = activePlayers.length;
-                console.log("Numplayers = " + numPlayers);
-                updateNames(activePlayers);
-            roleNum.villager = numPlayers - roleNum.wolf - roleNum.seer;
-            var readyButton = document.getElementById("readyButton");
-            if (roleNum.villager < 0){
-                readyButton.setAttribute("disabled", "true");
-                if (readyRef)
-                    getReady(readyButton);
-            }
-            else
-                readyButton.removeAttribute("disabled");
-        }, function(error) {
-            console.log("Error gettting the names of the players: " + error.code);
-        });
 
         //Listen for number of each role
-        roomRef.child("roleSettings").on("value", function(snapshot) {
-            for (var role in snapshot.val()){
-                var checkRole = snapshot.val()[role]; 
-                if (checkRole <= 0)
-                    document.getElementById(role + "minus").setAttribute("disabled", true);
-                else
-                    document.getElementById(role + "minus").removeAttribute("disabled");
-
-                if (checkRole !== null){
-                    roleNum[role] = checkRole;
-                    document.getElementById(role + "NumDisplay").innerHTML = roleNum[role];
-                }
-            }
-            roleNum.villager = numPlayers - roleNum.wolf - roleNum.seer;
-            if (roleNum.villager < 0){
-                var readyButton = document.getElementById("readyButton");
-                readyButton.setAttribute("disabled", "true");
-                if (readyRef)
-                    getReady(readyButton);
-            }
-            else {
-                document.getElementById("readyButton").removeAttribute("disabled");
-            }
-        }, function(error) {
-            console.log("Error gettting the roles of the players: " + error.code);
-        });
-
 
         //Create current player
-        playerRef.set(playerID);
-        console.log(playerID + " : " + roomID);
 
-        document.getElementById("currentRoom").innerHTML = "Room: " + roomID;
+        document.getElementById("currentRoom").innerHTML = "Playing as " + playerID + " in " + roomID;
         document.getElementById("loginscreen").style.display = "none";
         document.getElementById("gamescreen").style.display = "block";
     }
     else {
+        //TODO
         console.log("Invalid IDs");
     }
 }
@@ -82,79 +45,85 @@ function getReady(button){
     if (button.innerHTML == "Ready?"){
         button.innerHTML = "Waiting";
 
-        button.classList.add("holdActive");
+        button.className = 'actionButton holdActive';
 
-        readyRef = waitForAll(roomRef.child("readyPlayers"),numPlayers, playGame);
+        this.readyRef = dataStore.waitForAll("readyPlayers", dataStore.getNumPlayers(), playGame);
 
     } else if (button.innerHTML == "Waiting"){
-        //Need to catch exception here
         button.innerHTML = "Ready?";
-        button.classList.remove("holdActive");
+        button.classList = "actionButton";
 
-        roomRef.child("readyPlayers").off();
-        readyRef.onDisconnect().cancel();
-        readyRef.remove();
-        readyRef = false;
+        dataStore.cancelWait(this.readyRef);
     }
 }
 
-function changeRoleCount(increment, role){
-    if (roleNum[role] === 0 )
+
+function changeRoleCountByButton (role, increment){
+    if (dataStore.getRoleCount(role) === 0 )
         document.getElementById(role + "minus").removeAttribute("disabled");
-    roleNum[role] += increment; 
-    document.getElementById(role + "NumDisplay").innerHTML = roleNum[role];
-    roleNum.villager -= increment;
-    roomRef.child("roleSettings/" + role).transaction(function(currentVal){
-        currentVal += increment;
-        return currentVal;
-    });
-    if (roleNum[role] === 0 )
+
+    dataStore.incrementRoleCount(role, increment);
+    document.getElementById(role + "NumDisplay").innerHTML = dataStore.getRoleCount(role);
+
+    if (dataStore.getRoleCount(role) === 0 )
         document.getElementById(role + "minus").setAttribute("disabled", true);
 }
 
 function assignRoles(){
-    var numVillagers = numPlayers - roleNum.wolf - roleNum.seer;
 
     var assignRoleArray = [];
 
-    for (i = 0; i < roleNum.wolf; i++)
+    for (i = 0; i < dataStore.getRoleCount("wolf"); i++)
         assignRoleArray.push("werewolf");
-    for (i = 0; i < numVillagers; i++)
+    for (i = 0; i < dataStore.getRoleCount("villager"); i++)
         assignRoleArray.push("villager");
-    console.log(assignRoleArray);
 
     assignRoleArray = shuffle(assignRoleArray);
+    console.log(assignRoleArray);
 
     for (var i in assignRoleArray){
-        firebase.database().ref(roomID + "/roles/" + activePlayers[i].name).set(assignRoleArray[i]);
-        console.log(activePlayers[i].name + ": " + assignRoleArray[i]);
+    //    roomRef.child("roles/" + activePlayers[i].name).set(assignRoleArray[i]);
+        dataStore.addPlayerWithRole(i, assignRoleArray[i]);
+        //console.log(activePlayers[i].name + ": " + assignRoleArray[i]);
     }
 }
 
 function playGame(){
-
     console.log("GAME HAS STARTED");
 
-    console.log("I am the host " + amHost);
-    if (amHost) 
+    console.log("I am the host " + me.amHost);
+    if (dataStore.checkIfHost()) 
         assignRoles();
 
-    //Get Roles
-    var timer = setTimeout (function(){
-        console.log("Could not get role... taking too long");
-    }, 3000);
+    ////Get Roles
+    
+    var myRole = null;
+    var numChecked = 0;
 
-    roomRef.child("roles/" + playerID).on("value", function(snapshot) {
-        myRole = snapshot.val();
-        if (snapshot.val() !== null){
-            clearTimeout(timer);
-            console.log(myRole);
-            roomRef.child("roles/" + playerID).off();
+    function waitToCheckForRole () {
+        myRole = dataStore.getMyRole();
+        if ( numChecked < 8 && myRole === null ) {
+            setTimeout (waitToCheckForRole, 500);
         }
-    }, function(error) {
-        console.log("Error gettting role: " + error.code);
-    });
+        else if ( numChecked >= 8 )
+            console.log("Error: Could not get Role");
+        else {
+            console.log(myRole);
+            showDayPhase();
+        }
+    }
 
-    showDayPhase();
+    waitToCheckForRole();
+
+    ////This is temporary
+    //roomRef.child("roles/" + me.name).once("value", function(snapshot) {
+    //    me.role = snapshot.val();
+    //    if (snapshot.val() !== null){
+    //        clearTimeout(timer);
+    //        console.log(me.role);
+    //    }
+    //}, function(error) {
+    //    console.log("Error gettting role: " + error.code);
+    //});
+
 }
-

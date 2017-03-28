@@ -1,38 +1,58 @@
+//OK
 function showNightPhase(){
-    console.log("Now performing role: " + myRole);
-    if (myRole === "villager")
+    resetRadioButtons();
+    console.log("Now performing role: " + dataStore.getMyRole());
+    if (dataStore.getMyRole() === "villager")
         villagerAction();
-    else if (myRole === "werewolf")
+    else if (dataStore.getMyRole() === "werewolf")
         werewolfAction();
 
     function villagerAction(){
-        document.getElementById("nightBox").innerHTML = "Waiting for dawn.";
-        waitForAll(roomRef.child("nightWait"), numPlayers, postNightPhase);
+//        dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase, "$null");
     }
 
     function werewolfAction(){
-        document.getElementById("nightBox").innerHTML = null;
-        for (var i in activePlayers){
-            document.getElementById("nightBox").innerHTML += "<button id='wbutton-" + i +"' onclick='wereVote(this)'>" + activePlayers[i].name + "</button>";
-        }
+        //show wolf things
+
+        //dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase);
+        //for (var i in activePlayers){
+        //    document.getElementById("nightBox").innerHTML += "<button id='wbutton-" + i +"' onclick='wereVote(this)'>" + activePlayers[i].name + "</button>";
+        //}
     }
 }
 
-function wereVote(button) {
-    var wereVoteRef = roomRef.child("wereVote/" + playerID);
+//Change to use radio buttons
+function wereVote() {
+    //var wereVoteRef = roomRef.child("wereVote/" + me.name);
 
-    wereVoteRef.set(button.id.slice(8));
+    //wereVoteRef.set(button.id.slice(8));
     //wereVoteRef.onDisconnect().remove();
 
-    waitForAll(roomRef.child("nightWait"), numPlayers, postNightPhase);
+    dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase, getRadioPlayerIndex());
 }
 
-function postNightPhase(){
+function postNightPhase(voteData){ 
+    var loserIndex = countVotes(voteData, true);
+    
+    addToLog("During the night " + dataStore.getPlayerName(loserIndex) + " disappeared.");
+
+    var iLost = false;
+    if (dataStore.getPlayerName(loserIndex) === dataStore.getMyName())
+        iLost = true;
+
+    dataStore.removePlayerLocally(loserIndex);
+
+    if (iLost)
+        dataStore.leaveGame();
+    else
+        showDayPhase();
+};
+
+function ppostNightPhase(){
     var loser = {index: null, count: 0};
     var fullWereVoteRef = roomRef.child("wereVote");
 
     fullWereVoteRef.once("value", function(snapshot) {
-        document.getElementById("nightBox").innerHTML = null;
         var voteArray = [];
         for (var i in snapshot.val()){
             (voteArray[snapshot.val()[i]] === undefined ) ? voteArray[snapshot.val()[i]] = 1 : voteArray[snapshot.val()[i]]++;
@@ -45,13 +65,12 @@ function postNightPhase(){
                 loser.index = "tie";
             }
         }
-        if (amHost)
+        if (me.amHost)
             fullWereVoteRef.remove();
         addToLog("The werewolves have struck. " + activePlayers[loser.index].name + " has disappeared.");
-        numPlayers--;
 
         var iLost = false;
-        if (activePlayers[loser.index].name === playerID)
+        if (activePlayers[loser.index].name === me.name)
             iLost = true;
         activePlayers.splice(loser.index,1);
         if (iLost)
