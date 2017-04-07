@@ -14,12 +14,12 @@ function dataManager (playerName, roomName){
     var hostStatus = false;
 
     //Information about roles
-    var myRole = null;
     var roleNum = {
         villager: 0,
         wolf: 0,
         seer: 0
     };
+    var playerRoles = null;
 
     //Active Player Information
     function player (playername, playerkey){
@@ -73,23 +73,21 @@ function dataManager (playerName, roomName){
 
     this.addPlayerWithRole = function (playerIndex, role) {
         roomRef.child("roles/" + activePlayers[playerIndex].name).set(role);
-        if (activePlayers[playerIndex].name === playerID)
         return true;
     }
 
-
     this.getMyRole = function () {
-        if (myRole === null){
-            roomRef.child("roles/" + playerID).on("value", function(snapshot) {
-                myRole = snapshot.val();
-            }, function(error) {
-                console.log("Error gettting role: " + error.code);
-            });
-        }
-        return myRole;
+        if (playerRoles !== null)
+            return playerRoles[playerID];
+        else
+            return null;
     }
 
-    this.waitForAll = function (refLocation, num, action, text){
+    this.getPlayerRole = function (index) {
+        return playerRoles[activePlayers[index].name];
+    }
+
+    this.waitForAll = function (refLocation, action, text){
         var playerReadyRef = roomRef.child(refLocation + "/" + playerID);
         if (text === undefined)
             playerReadyRef.set("Waiting...");
@@ -103,7 +101,7 @@ function dataManager (playerName, roomName){
                 numReadyPlayers += 1;
 
             console.log(numReadyPlayers + " ready players");
-            if (numReadyPlayers === num){
+            if (numReadyPlayers === activePlayers.length){
                 var data = snapshot.val();
                 roomRef.child(refLocation).off();
                 playerReadyRef.onDisconnect().cancel();
@@ -125,6 +123,15 @@ function dataManager (playerName, roomName){
         readyRef.remove();
     }
 
+    //this.getAliveWolfCount = function () {
+    //    return aliveWolves;
+    //}
+
+    //this.endPregameSettings = function (){
+    //    roomRef.child("roleSettings").off();
+    //    aliveWolves = roleNum.wolf;
+    //}
+
     this.readDatabase = function (refLocation) {
         var dataValue = null;
         roomRef.child(refLocation).once("value", function(snapshot){
@@ -140,6 +147,7 @@ function dataManager (playerName, roomName){
         addToLog("You have left the game");
         playerRef.onDisconnect().cancel();
         playerRef.remove();
+        roomRef.child("roles/" + playerID).remove();
         return true;
     }
 
@@ -181,7 +189,7 @@ function dataManager (playerName, roomName){
 
         checkForValidRoleCounts();
     }, function(error) {
-        console.log("Error gettting the roles of the players: " + error.code);
+        console.log("Error gettting the role counts of the players: " + error.code);
     });
 
     function checkForValidRoleCounts() {
@@ -195,6 +203,12 @@ function dataManager (playerName, roomName){
             readyButton.removeAttribute("disabled");
         }
     }
+
+    roomRef.child("roles").on("value", function(snapshot) {
+        playerRoles = snapshot.val();
+    }, function(error) {
+        console.log("Error gettting the roles of the players: " + error.code);
+    });
 
     playerRef.set(playerID);
     playerRef.onDisconnect().remove();

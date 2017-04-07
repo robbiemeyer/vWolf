@@ -47,13 +47,13 @@ function getReady(button){
 
         button.className = 'actionButton holdActive';
 
-        this.readyRef = dataStore.waitForAll("readyPlayers", dataStore.getNumPlayers(), playGame);
+        this.readyRef = dataStore.waitForAll("readyPlayers", playGame);
 
     } else if (button.innerHTML == "Waiting"){
         button.innerHTML = "Ready?";
         button.classList = "actionButton";
 
-        dataStore.cancelWait(this.readyRef);
+        dataStore.removeWait(this.readyRef);
     }
 }
 
@@ -90,6 +90,7 @@ function assignRoles(){
 
 function playGame(){
     console.log("GAME HAS STARTED");
+//    dataStore.endPregameSettings();
 
     console.log("I am the host " + me.amHost);
     if (dataStore.checkIfHost()) 

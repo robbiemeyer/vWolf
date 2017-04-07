@@ -77,6 +77,7 @@ function resetRadioButtons(){
 function addToLog(item){
     var log = document.getElementById("gameLog");
     log.innerHTML += "<div class='logitem'>" + item + "</div>";
+    log.scrollTop = log.scrollHeight - log.clientHeight;
     return log.innerHTML;
 }
 

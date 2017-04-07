@@ -34,10 +34,13 @@
 
         <div id="gamescreen">
             <!-- Header -->
-            <div id="banner">
-                <img src="img/banner-logo.png" alt="vWolf" id="bannerLogo"></img>
-                <span id="currentRoom">Unknown</span>
-            </div>
+            <ul id="banner">
+                <li><img src="img/banner-logo.png" alt="vWolf" id="bannerLogo"></img></li>
+                <li id="currentRoom">Unknown</li>
+            </ul>
+
+            <h2 id="logHeader">Game Log</h2>
+            <div id="gameLog"></div>
 
             <!-- Game Content -->
             <div id="pregamescreen">
@@ -58,28 +61,21 @@
                 <button class="actionButton" id="readyButton" onclick="getReady(this)">Ready?</button>
             </div>
 
-            <div id="dayscreen" style="display:none">
-                <h2>Who do you think is a Werewolf?</h3>
-                <div id="radioBox">
-                    no radio buttons
-                </div>
-                <button class="actionButton" id="dayVoteButton" onclick="dayVote()">Vote</button>
+            <h2 id="dayHeader">Who do you think is a Werewolf?</h2>
+            <h2 id="wolfHeader">Who would you like to eliminate?</h2>
+
+            <div id="radioBox">
+                no radio buttons
             </div>
 
-            <!--
-            <div id="dayVoteBoxes">
-                no boxes
-            </div>
-            -->
-
+            <!---
             <div id="nightBox">
                 The Night has not begun
             </div>
+            -->
             <!-- Buttons -->
             <button class="actionButton" id="nightWolfButton" onclick="wereVote()">Vote</button>
-        </div>
-
-        <div id="gameLog">
+            <button class="actionButton" id="dayVoteButton" onclick="dayVote()">Vote</button>
         </div>
     </body>
 </html>

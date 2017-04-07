@@ -1,6 +1,10 @@
 //OK
 function showNightPhase(){
     resetRadioButtons();
+    document.getElementById("dayHeader").style.display = "none";
+    document.getElementById("radioBox").style.display = "none";
+    document.getElementById("dayVoteButton").style.display = "none";
+
     console.log("Now performing role: " + dataStore.getMyRole());
     if (dataStore.getMyRole() === "villager")
         villagerAction();
@@ -8,10 +12,13 @@ function showNightPhase(){
         werewolfAction();
 
     function villagerAction(){
-//        dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase, "$null");
+        dataStore.waitForAll("nightWait", postNightPhase, "$null");
     }
 
     function werewolfAction(){
+        document.getElementById("wolfHeader").style.display = "block";
+        document.getElementById("radioBox").style.display = "block";
+        document.getElementById("nightWolfButton").style.display = "block";
         //show wolf things
 
         //dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase);
@@ -23,12 +30,11 @@ function showNightPhase(){
 
 //Change to use radio buttons
 function wereVote() {
-    //var wereVoteRef = roomRef.child("wereVote/" + me.name);
+    document.getElementById("wolfHeader").style.display = "none";
+    document.getElementById("radioBox").style.display = "none";
+    document.getElementById("nightWolfButton").style.display = "none";
 
-    //wereVoteRef.set(button.id.slice(8));
-    //wereVoteRef.onDisconnect().remove();
-
-    dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase, getRadioPlayerIndex());
+    dataStore.waitForAll("nightWait", postNightPhase, getRadioPlayerIndex());
 }
 
 function postNightPhase(voteData){ 
@@ -47,37 +53,3 @@ function postNightPhase(voteData){
     else
         showDayPhase();
 };
-
-function ppostNightPhase(){
-    var loser = {index: null, count: 0};
-    var fullWereVoteRef = roomRef.child("wereVote");
-
-    fullWereVoteRef.once("value", function(snapshot) {
-        var voteArray = [];
-        for (var i in snapshot.val()){
-            (voteArray[snapshot.val()[i]] === undefined ) ? voteArray[snapshot.val()[i]] = 1 : voteArray[snapshot.val()[i]]++;
-            addToLog(i + " has voted for " + activePlayers[snapshot.val()[i]].name + ". (WOLF)");
-            if (voteArray[snapshot.val()[i]] > loser.count){
-                loser.index = snapshot.val()[i];
-                loser.count = voteArray[snapshot.val()[i]];
-            }
-            else if (voteArray[snapshot.val()[i]] === loser.count){
-                loser.index = "tie";
-            }
-        }
-        if (me.amHost)
-            fullWereVoteRef.remove();
-        addToLog("The werewolves have struck. " + activePlayers[loser.index].name + " has disappeared.");
-
-        var iLost = false;
-        if (activePlayers[loser.index].name === me.name)
-            iLost = true;
-        activePlayers.splice(loser.index,1);
-        if (iLost)
-            leaveGame();
-        else
-            showDayPhase();
-    }, function(error) {
-            console.log("Error getting the number of ready players: " + error.code);
-    });
-}
