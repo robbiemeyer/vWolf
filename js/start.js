@@ -5,9 +5,7 @@ function enterRoom (){
     var roomID = document.getElementById("roomBox").value;
     var playerID = document.getElementById("userBox").value;
 
-    //TODO: Should be function to check if valid
-    
-    if (/^\w+$/.test(playerID) && /^\w+$/.test(roomID)){
+    if (/^\w{1,10}$/.test(playerID) && /^\w{1,10}/.test(roomID)){
 
         firebase.auth().signInAnonymously().catch(function(error) {
             console.log("Could not sign in to database: " +  error.code);
@@ -18,20 +16,9 @@ function enterRoom (){
                 dataStore = new dataManager(playerID, roomID);
         });
 
-
-        //Create references
-        //roomRef = firebase.database().ref(roomID);
-        //playerRef = roomRef.child("players").push();
-
-        //Set-up disconnect
-
-        //Listen for list of active players
-
-        //Listen for number of each role
-
-        //Create current player
-
-        document.getElementById("currentRoom").innerHTML = "Playing as " + playerID + " in " + roomID;
+        //document.getElementById("currentRoom").innerHTML = "Playing as " + playerID + " in " + roomID;
+        document.getElementById("currentRoom").innerHTML = "Room: "+ roomID;
+        document.getElementById("currentUser").innerHTML = "Name: "+ playerID;
         document.getElementById("loginscreen").style.display = "none";
         document.getElementById("gamescreen").style.display = "block";
     }
@@ -90,11 +77,12 @@ function assignRoles(){
 
 function playGame(){
     console.log("GAME HAS STARTED");
-//    dataStore.endPregameSettings();
 
-    console.log("I am the host " + me.amHost);
-    if (dataStore.checkIfHost()) 
+    //console.log("I am the host " + me.amHost);
+    if (dataStore.checkIfHost()){
         assignRoles();
+        dataStore.changeGameStatus("started");
+    }
 
     ////Get Roles
     
@@ -109,7 +97,9 @@ function playGame(){
         else if ( numChecked >= 8 )
             console.log("Error: Could not get Role");
         else {
-            console.log(myRole);
+            //console.log(myRole);
+            document.getElementById("currentRole").innerHTML = "Role: " + myRole;
+            window.alert("You are a " + myRole);
             showDayPhase();
         }
     }

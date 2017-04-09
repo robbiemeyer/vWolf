@@ -6,26 +6,6 @@ var config = {
 };
 firebase.initializeApp(config);
 
-//Possibly create other function to hold html interactions
-
-// IDs and References (Should be set by user)
-var roomRef = null;
-var playerRef = null;
-
-var activePlayers = new Array();
-
-var me = {
-    name: null,
-    role:  "unassigned",
-    amHost: false
-};
-
-var roleNum = {
-    villager: activePlayers.length,
-    wolf: 0,
-    seer: 0
-};
-
 function shuffle (array){
     var currentIndex = array.length;
     var randomIndex;
@@ -53,7 +33,6 @@ function updateNames(activePlayers) {
         document.getElementById("activeList").innerHTML += "<div class='playername'>" + activePlayers[i].name + "</div>";
         radioBox.innerHTML += "<div class=playername><input type=radio class='voteRadio' name='target' id=" + i + "radio value=" + i +" ><label class=radiolabel for=" + i + "radio >" + activePlayers[i].name + "</label></div>";
     }
-    //To clear the buttons, can change the hidden button to be active
     radioBox.innerHTML += "<input type=radio name='target' value='$null' id='noRadio'>";
 }
 
@@ -79,5 +58,29 @@ function addToLog(item){
     log.innerHTML += "<div class='logitem'>" + item + "</div>";
     log.scrollTop = log.scrollHeight - log.clientHeight;
     return log.innerHTML;
+}
+
+function toggleSettingsMenu(){
+    var dropdown = document.getElementById("currentSettingsDropdown");
+    if (dropdown.style.display === "none"){
+        dropdown.style.display = "block";
+        document.getElementById("currentSettingsButton").style.backgroundColor= "white";
+        document.getElementById("currentSettingsButton").style.color= "black";
+        window.onclick = function(event){ 
+            //TODO Better wat to detect null
+            if ( event.target.parentElement === null || (event.target.id !== "currentSettingsButton" && event.target.parentElement.id !== "currentSettingsDropdown")){
+                dropdown.style.display = "none";
+                document.getElementById("currentSettingsButton").style.backgroundColor = null;
+                document.getElementById("currentSettingsButton").style.color= null;
+                window.onclick = null;
+            }
+        };
+    }
+    else{
+        window.onclick = null;
+        dropdown.style.display = "none";
+        document.getElementById("currentSettingsButton").style.backgroundColor = null;
+        document.getElementById("currentSettingsButton").style.color= null;
+    }
 }
 

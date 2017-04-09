@@ -36,11 +36,18 @@
             <!-- Header -->
             <ul id="banner">
                 <li><img src="img/banner-logo.png" alt="vWolf" id="bannerLogo"></img></li>
-                <li id="currentRoom">Unknown</li>
+                <li id="currentSettings">
+                    <div id="currentSettingsButton" onclick="toggleSettingsMenu()">Menu</div>
+                    <div id="currentSettingsDropdown" style="display: none">
+                        <div>&nbsp</div>
+                        <div id="currentUser">User:</div>
+                        <div id="currentRoom">Room:</div>
+                        <div id="currentRole">Role: Unknown</div>
+                        <div>Leave Room</div>
+                    </div>
+                </li>
             </ul>
 
-            <h2 id="logHeader">Game Log</h2>
-            <div id="gameLog"></div>
 
             <!-- Game Content -->
             <div id="pregamescreen">
@@ -60,6 +67,10 @@
 
                 <button class="actionButton" id="readyButton" onclick="getReady(this)">Ready?</button>
             </div>
+            <div id="alreadyStarted" style="display: none">
+                There is already a game in this room.<br>
+                Refresh the page to go back.
+            </div>
 
             <h2 id="dayHeader">Who do you think is a Werewolf?</h2>
             <h2 id="wolfHeader">Who would you like to eliminate?</h2>
@@ -76,6 +87,9 @@
             <!-- Buttons -->
             <button class="actionButton" id="nightWolfButton" onclick="wereVote()">Vote</button>
             <button class="actionButton" id="dayVoteButton" onclick="dayVote()">Vote</button>
+
+            <h2 id="logHeader">Game Log</h2>
+            <div id="gameLog"></div>
         </div>
     </body>
 </html>

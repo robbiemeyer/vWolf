@@ -1,33 +1,6 @@
 //Expects firebase to be working
-//TODO: Need to chekck if room was already created and create basic settings if it is empty
-//      Create basic role settings if no buttons are set
+
 function dataManager (playerName, roomName){
-//Private Variables
-    
-    //Arguments
-    var playerID = playerName;
-    var roomID = roomName;
-
-    //Room references
-    var roomRef = firebase.database().ref(roomID);
-    var playerRef = roomRef.child("players").push();
-    var hostStatus = false;
-
-    //Information about roles
-    var roleNum = {
-        villager: 0,
-        wolf: 0,
-        seer: 0
-    };
-    var playerRoles = null;
-
-    //Active Player Information
-    function player (playername, playerkey){
-        this.name = playername;
-        this.key = playerkey;
-    }
-    var activePlayers = new Array();
-
 //Public Functions
     this.getNumPlayers = function () {
         return activePlayers.length;
@@ -48,6 +21,11 @@ function dataManager (playerName, roomName){
 
     this.checkIfHost = function () {
         return hostStatus;
+    }
+
+    this.changeGameStatus = function (string) {
+        roomRef.child("gameStatus").set(string);
+        return string;
     }
 
     this.getRoleCount = function (role) {
@@ -106,8 +84,6 @@ function dataManager (playerName, roomName){
                 roomRef.child(refLocation).off();
                 playerReadyRef.onDisconnect().cancel();
                 playerReadyRef.remove();
-                //if (hostStatus)
-                //    roomRef.child(refLocation).remove();
                 action(data);
             }
         }, function(error) {
@@ -122,15 +98,6 @@ function dataManager (playerName, roomName){
         readyRef.onDisconnect().cancel();
         readyRef.remove();
     }
-
-    //this.getAliveWolfCount = function () {
-    //    return aliveWolves;
-    //}
-
-    //this.endPregameSettings = function (){
-    //    roomRef.child("roleSettings").off();
-    //    aliveWolves = roleNum.wolf;
-    //}
 
     this.readDatabase = function (refLocation) {
         var dataValue = null;
@@ -150,8 +117,59 @@ function dataManager (playerName, roomName){
         roomRef.child("roles/" + playerID).remove();
         return true;
     }
+//Private Variables
+    
+    //Arguments
+    var playerID = playerName;
+    var roomID = roomName;
+
+    //Room references
+    var roomRef = firebase.database().ref(roomID);
+    var playerRef = null; //Set later
+    var hostStatus = false;
+
+    //Information about roles
+    var roleNum = {
+        villager: 0,
+        wolf: 0,
+        seer: 0
+    };
+    var playerRoles = null;
+
+    //Active Player Information
+    function player (playername, playerkey){
+        this.name = playername;
+        this.key = playerkey;
+    }
+    var activePlayers = new Array();
 
 //Start-up functionality...
+    roomRef.child("players").once("value", function(snapshot) {
+        if (snapshot.val() === null)
+            roomRef.remove();
+
+        playerRef = roomRef.child("players").push();
+        playerRef.set(playerID);
+        playerRef.onDisconnect().remove(function(error){
+            if (error !== null){
+                console.log(error);
+                document.getElementById("pregamescreen").style.display = "none";
+                window.alert("An error occured and you could not be added to the game. Please refresh the page and try again");
+                playerRef.remove();
+            }
+        });
+    });
+
+    roomRef.child("roomStatus").once("value", function(snapshot) {
+        if (snapshot.val() === "started"){
+            document.getElementById("pregamescreen").style.display = "none";
+            document.getElementById("alreadyStarted").style.display = "block";
+            playerRef.remove();
+        }
+    }, function(error){
+        console.log("Error getting the status of the room: " + error.code);
+    });
+    
     //Listeners and connections to firebase
     roomRef.child("players").on("value", function(snapshot) {
         activePlayers = new Array();
@@ -160,7 +178,7 @@ function dataManager (playerName, roomName){
                 //activePlayers.push({name:snapshot.val()[i], key: i});
             }
 
-            if (playerID === activePlayers[0].name)
+            if (activePlayers[0] !== undefined && playerID === activePlayers[0].name)
                 hostStatus = true;
         
         console.log("Numplayers = " + activePlayers.length);
@@ -210,12 +228,6 @@ function dataManager (playerName, roomName){
         console.log("Error gettting the roles of the players: " + error.code);
     });
 
-    playerRef.set(playerID);
-    playerRef.onDisconnect().remove();
-
-    //Getters and Setters
-
-    //Waiting function
 
 }
 
