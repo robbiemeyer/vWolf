@@ -7,17 +7,20 @@ function dataManager (playerName, roomName){
     }
 
     this.getPlayerName = function (index){
-        return activePlayers[index].name;
+        if (activePlayers[index] === undefined)
+            return null
+        else
+            return activePlayers[index].name;
     }
 
     this.getMyName = function () {
         return playerID;
     }
 
-    this.removePlayerLocally = function (index) {
-        activePlayers.splice(index,1);
-        return true;
-    }
+    //this.removePlayerLocally = function (index) {
+    //    activePlayers.splice(index,1);
+    //    return true;
+    //}
 
     this.checkIfHost = function () {
         return hostStatus;
@@ -62,7 +65,10 @@ function dataManager (playerName, roomName){
     }
 
     this.getPlayerRole = function (index) {
-        return playerRoles[activePlayers[index].key];
+        if (activePlayers[index] === undefined)
+            return null;
+        else
+            return playerRoles[activePlayers[index].key];
     }
 
     this.waitForAll = function (refLocation, action, text){
@@ -164,7 +170,7 @@ function dataManager (playerName, roomName){
     roomRef.child("players").once("value", function(snapshot) {
         if (firstLogin) {
             var gameStarted = false;
-            if (snapshot.val() === null || snapshot.val().length < 2 || Date.now() - snapshot.val().lastDate > 86400000){
+            if (snapshot.val() === null || Date.now() - snapshot.val().lastDate > 86400000){
                 roomRef.remove();
                 roomRef.child("players/lastDate").set(Date.now());
             }
@@ -186,7 +192,7 @@ function dataManager (playerName, roomName){
             }
 
             if (!gameStarted){
-                playerRef = roomRef.child("players").push();
+                playerRef = roomRef.child("players/playerNames").push();
                 playerRef.set(playerID);
                 playerRef.onDisconnect().remove(function(error){
                     if (error !== null){
@@ -203,12 +209,10 @@ function dataManager (playerName, roomName){
     });
 
     //Listeners and connections to firebase
-    roomRef.child("players").on("value", function(snapshot) {
+    roomRef.child("players/playerNames").on("value", function(snapshot) {
         activePlayers = new Array();
             for (var i in snapshot.val()){
-                if (i !== "lastDate")
-                    activePlayers.push(new player (snapshot.val()[i], i));
-                //activePlayers.push({name:snapshot.val()[i], key: i});
+                activePlayers.push(new player (snapshot.val()[i], i));
             }
 
             if (activePlayers[0] !== undefined && playerID === activePlayers[0].name)

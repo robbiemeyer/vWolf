@@ -32,7 +32,6 @@ function dayVote(){
     document.getElementById("notice").style.display = "block";
 }
 
-//TODO TIES
 function postDayVote(voteData){
     var loserIndex = countVotes(voteData, false);
     var loserRole = dataStore.getPlayerRole(loserIndex);
@@ -44,10 +43,14 @@ function postDayVote(voteData){
     console.log(dataStore.getRoleCount("wolf") );
     console.log(this.losingWolf);
 
-    addToLog("The town has spoken. " + dataStore.getPlayerName(loserIndex) + " the " + loserRole + ", your time has come.");
+    if (loserIndex > 0){
+        addToLog("The town has spoken. " + dataStore.getPlayerName(loserIndex) + " the " + loserRole + ", your time has come.");
 
-    if (loserRole === "werewolf")
-        this.losingWolf += 1;
+        if (loserRole === "werewolf")
+            this.losingWolf += 1;
+    }
+    else 
+        addToLog("The vote was tied, all shall survive.");
 
     if (dataStore.getRoleCount("wolf") - this.losingWolf === 0)
         gameEnded = "villager";
@@ -55,9 +58,7 @@ function postDayVote(voteData){
         gameEnded = "wolf";
 
     if (dataStore.getPlayerName(loserIndex) === dataStore.getMyName())
-        iLost = true;
-
-//    dataStore.removePlayerLocally(loserIndex);
+            iLost = true;
 
     document.getElementById("notice").style.display = "block";
     if (gameEnded === "villager"){
@@ -92,7 +93,7 @@ function countVotes (playerVotes, isSilent){
                 loser.count = voteArray[playerVotes[i].text];
             }
             else if (voteArray[playerVotes[i].text] === loser.count){
-                loser.index = "tie";
+                loser.index = -1;
             }
         }
     }
