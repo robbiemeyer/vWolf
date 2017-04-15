@@ -64,10 +64,14 @@ function postDayVote(voteData){
     if (gameEnded === "villager"){
         addToLog("The werewolf threat is no more. Villagers win!");
         document.getElementById("notice").innerHTML = "Villagers Win";
+        dataStore.leaveRoom();
+        dataStore.leavePlayer();
     }
     else if (gameEnded === "wolf"){
         addToLog("There are too few surviving villagers. Werewolves win!");
         document.getElementById("notice").innerHTML = "Werewolves Win";
+        dataStore.leaveRoom();
+        dataStore.leavePlayer();
     }
     else if (iLost){
         document.getElementById("notice").style.display = "none";

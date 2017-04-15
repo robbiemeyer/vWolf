@@ -1,7 +1,7 @@
 body {
     background-color: #424242;
     color: #ffffff;
-    font-family: sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: 14pt;
     margin: auto;
     width: 90%;
@@ -63,7 +63,6 @@ button:disabled{
     line-height: 2.4em;
     width: 100%;
     margin: 0.5em auto;
-    font-family: 'sans serif';
     max-width: 400px;
     display: block;
 }
@@ -73,12 +72,12 @@ button:disabled{
     outline: none;
     border: none;
     width: 70%;
+    font-size: 1em;
 }
 
 .actionButton{
     width: 100%;
     margin: 0.5em auto;
-    font-family: 'sans serif';
     max-width: 400px;
     display: block;
     height: 2.8em;

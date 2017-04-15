@@ -170,7 +170,7 @@ function dataManager (playerName, roomName){
     roomRef.child("players").once("value", function(snapshot) {
         if (firstLogin) {
             var gameStarted = false;
-            if (snapshot.val() === null || Date.now() - snapshot.val().lastDate > 86400000){
+            if (snapshot.val() === null || snapshot.val().playerNames === undefined || Date.now() - snapshot.val().lastDate > 86400000){
                 roomRef.remove();
                 roomRef.child("players/lastDate").set(Date.now());
             }
