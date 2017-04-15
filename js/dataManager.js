@@ -50,27 +50,27 @@ function dataManager (playerName, roomName){
     }
 
     this.addPlayerWithRole = function (playerIndex, role) {
-        roomRef.child("roles/" + activePlayers[playerIndex].name).set(role);
+        roomRef.child("roles/" + activePlayers[playerIndex].key).set(role);
         return true;
     }
 
     this.getMyRole = function () {
         if (playerRoles !== null)
-            return playerRoles[playerID];
+            return playerRoles[playerRef.key];
         else
             return null;
     }
 
     this.getPlayerRole = function (index) {
-        return playerRoles[activePlayers[index].name];
+        return playerRoles[activePlayers[index].key];
     }
 
     this.waitForAll = function (refLocation, action, text){
-        var playerReadyRef = roomRef.child(refLocation + "/" + playerID);
+        var playerReadyRef = roomRef.child(refLocation).push();
         if (text === undefined)
-            playerReadyRef.set("Waiting...");
+            playerReadyRef.set({name: playerID, text: "Waiting..."});
         else
-            playerReadyRef.set(text);
+            playerReadyRef.set({name: playerID, text: text});
         playerReadyRef.onDisconnect().remove();
 
         roomRef.child(refLocation).on("value", function(snapshot) {
@@ -97,6 +97,14 @@ function dataManager (playerName, roomName){
         readyRef.parent.off();
         readyRef.onDisconnect().cancel();
         readyRef.remove();
+        return true;
+    }
+
+    this.beginStartedGameSettings = function (){
+        roomRef.child("roleSettings").off();
+        playerRef.onDisconnect().cancel();
+
+        return true;
     }
 
     this.readDatabase = function (refLocation) {
@@ -109,8 +117,14 @@ function dataManager (playerName, roomName){
         return dataValue;
     }
 
-    this.leaveGame = function () {
-        //change to dialog that shows
+    this.leaveRoom = function () {
+        roomRef.child("players").off();
+        roomRef.child("roleSettings").off();
+        roomRef.child("roles").off();
+        return true;
+    }
+
+    this.leavePlayer = function () {
         addToLog("You have left the game");
         playerRef.onDisconnect().cancel();
         playerRef.remove();
@@ -143,38 +157,57 @@ function dataManager (playerName, roomName){
     }
     var activePlayers = new Array();
 
+    var firstPlayer = false;
 //Start-up functionality...
+    //Check to see if the game has already started in that room, if it has then do not join
+    var firstLogin = true;
     roomRef.child("players").once("value", function(snapshot) {
-        if (snapshot.val() === null)
-            roomRef.remove();
-
-        playerRef = roomRef.child("players").push();
-        playerRef.set(playerID);
-        playerRef.onDisconnect().remove(function(error){
-            if (error !== null){
-                console.log(error);
-                document.getElementById("pregamescreen").style.display = "none";
-                window.alert("An error occured and you could not be added to the game. Please refresh the page and try again");
-                playerRef.remove();
+        if (firstLogin) {
+            var gameStarted = false;
+            if (snapshot.val() === null || snapshot.val().length < 2 || Date.now() - snapshot.val().lastDate > 86400000){
+                roomRef.remove();
+                roomRef.child("players/lastDate").set(Date.now());
             }
-        });
+            else {
+                roomRef.child("gameStatus").once("value", function(statussnapshot) {
+                    if (statussnapshot.val() === "started"){
+                        document.getElementById("pregamescreen").style.display = "none";
+                        document.getElementById("alreadyStarted").style.display = "block";
+                        if (playerRef !== null)
+                            playerRef.remove();
+                        gameStarted = true;
+                    } 
+                    else {
+                        roomRef.child("players/lastDate").set(Date.now());
+                    }
+                }, function(error){
+                    console.log("Error getting the status of the room: " + error.code);
+                });
+            }
+
+            if (!gameStarted){
+                playerRef = roomRef.child("players").push();
+                playerRef.set(playerID);
+                playerRef.onDisconnect().remove(function(error){
+                    if (error !== null){
+                        console.log(error);
+                        document.getElementById("pregamescreen").style.display = "none";
+                        window.alert("An error occured and you could not be added to the game. Please refresh the page and try again");
+                        playerRef.remove();
+                    }
+                });
+            }
+
+            firstLogin = false;
+        }
     });
 
-    roomRef.child("roomStatus").once("value", function(snapshot) {
-        if (snapshot.val() === "started"){
-            document.getElementById("pregamescreen").style.display = "none";
-            document.getElementById("alreadyStarted").style.display = "block";
-            playerRef.remove();
-        }
-    }, function(error){
-        console.log("Error getting the status of the room: " + error.code);
-    });
-    
     //Listeners and connections to firebase
     roomRef.child("players").on("value", function(snapshot) {
         activePlayers = new Array();
             for (var i in snapshot.val()){
-                activePlayers.push(new player (snapshot.val()[i], i));
+                if (i !== "lastDate")
+                    activePlayers.push(new player (snapshot.val()[i], i));
                 //activePlayers.push({name:snapshot.val()[i], key: i});
             }
 
@@ -230,4 +263,3 @@ function dataManager (playerName, roomName){
 
 
 }
-

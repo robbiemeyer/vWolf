@@ -133,8 +133,13 @@ button:disabled{
 
 #currentSettingsDropdown > div {
     padding: 0.5em 1em;
-    
-    padding: 0.5em 1em;
+    position: relative;
+    z-index: 7;
+}
+
+#leaveGameButton {
+    color: #c33535;
+    cursor: pointer;
 }
 
 #gameLog{
@@ -202,6 +207,12 @@ input[type=radio]+label::before{
 input[type=radio]:checked+label::before{
     background-color: white;
     box-shadow: 0px 0 0 0.2em #424242 inset;
+}
+
+#notice{
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
 }
 
 /*input[type=radio]:checked+label::before(2){

@@ -84,6 +84,9 @@ function playGame(){
         dataStore.changeGameStatus("started");
     }
 
+    dataStore.beginStartedGameSettings();
+    document.getElementById("gameLog").innerHTML = "";
+
     ////Get Roles
     
     var myRole = null;
@@ -99,8 +102,8 @@ function playGame(){
         else {
             //console.log(myRole);
             document.getElementById("currentRole").innerHTML = "Role: " + myRole;
-            window.alert("You are a " + myRole);
             showDayPhase();
+            window.alert("You are a " + myRole);
         }
     }
 

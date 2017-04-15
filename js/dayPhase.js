@@ -28,6 +28,8 @@ function dayVote(){
     document.getElementById("dayVoteButton").style.display = "none";
 
     dataStore.waitForAll("dayVote", postDayVote, getRadioPlayerIndex());
+    document.getElementById("notice").innerHTML = "Waiting...";
+    document.getElementById("notice").style.display = "block";
 }
 
 //TODO TIES
@@ -57,16 +59,23 @@ function postDayVote(voteData){
 
 //    dataStore.removePlayerLocally(loserIndex);
 
+    document.getElementById("notice").style.display = "block";
     if (gameEnded === "villager"){
         addToLog("The werewolf threat is no more. Villagers win!");
+        document.getElementById("notice").innerHTML = "Villagers Win";
     }
     else if (gameEnded === "wolf"){
         addToLog("There are too few surviving villagers. Werewolves win!");
+        document.getElementById("notice").innerHTML = "Werewolves Win";
     }
-    else if (iLost)
-        dataStore.leaveGame();
-    else
+    else if (iLost){
+        document.getElementById("notice").style.display = "none";
+        dataStore.leavePlayer();
+    }
+    else{
+        document.getElementById("notice").style.display = "none";
         showNightPhase();
+    }
 }
 
 function countVotes (playerVotes, isSilent){
@@ -74,15 +83,15 @@ function countVotes (playerVotes, isSilent){
     var voteArray = [];
 
     for (var i in playerVotes){
-        if ( playerVotes[i] !== "$null") {
-            (voteArray[playerVotes[i]] === undefined ) ? voteArray[playerVotes[i]] = 1 : voteArray[playerVotes[i]]++;
+        if ( playerVotes[i].text !== "$null") {
+            (voteArray[playerVotes[i].text] === undefined ) ? voteArray[playerVotes[i].text] = 1 : voteArray[playerVotes[i].text]++;
             if (!isSilent)
-                addToLog(i + " has voted for " + dataStore.getPlayerName(playerVotes[i]) + ".");
-            if (voteArray[playerVotes[i]] > loser.count){
-                loser.index = playerVotes[i];
-                loser.count = voteArray[playerVotes[i]];
+                addToLog(playerVotes[i].name + " has voted for " + dataStore.getPlayerName(playerVotes[i].text) + ".");
+            if (voteArray[playerVotes[i].text] > loser.count){
+                loser.index = playerVotes[i].text;
+                loser.count = voteArray[playerVotes[i].text];
             }
-            else if (voteArray[playerVotes[i]] === loser.count){
+            else if (voteArray[playerVotes[i].text] === loser.count){
                 loser.index = "tie";
             }
         }

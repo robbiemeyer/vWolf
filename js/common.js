@@ -67,7 +67,6 @@ function toggleSettingsMenu(){
         document.getElementById("currentSettingsButton").style.backgroundColor= "white";
         document.getElementById("currentSettingsButton").style.color= "black";
         window.onclick = function(event){ 
-            //TODO Better wat to detect null
             if ( event.target.parentElement === null || (event.target.id !== "currentSettingsButton" && event.target.parentElement.id !== "currentSettingsDropdown")){
                 dropdown.style.display = "none";
                 document.getElementById("currentSettingsButton").style.backgroundColor = null;
@@ -76,7 +75,7 @@ function toggleSettingsMenu(){
             }
         };
     }
-    else{
+    else {
         window.onclick = null;
         dropdown.style.display = "none";
         document.getElementById("currentSettingsButton").style.backgroundColor = null;
@@ -84,3 +83,11 @@ function toggleSettingsMenu(){
     }
 }
 
+function leaveGameRoom (){
+    console.log("Left");
+    dataStore.leavePlayer();
+    dataStore.leaveRoom();
+    location.reload();
+    return true;
+}
+//TODO: Change all on... to event listeners

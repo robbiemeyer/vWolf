@@ -13,6 +13,8 @@ function showNightPhase(){
 
     function villagerAction(){
         dataStore.waitForAll("nightWait", postNightPhase, "$null");
+        document.getElementById("notice").innerHTML = "Waiting for night to end...";
+        document.getElementById("notice").style.display = "block";
     }
 
     function werewolfAction(){
@@ -35,6 +37,8 @@ function wereVote() {
     document.getElementById("nightWolfButton").style.display = "none";
 
     dataStore.waitForAll("nightWait", postNightPhase, getRadioPlayerIndex());
+    document.getElementById("notice").innerHTML = "Waiting for night to end...";
+    document.getElementById("notice").style.display = "block";
 }
 
 function postNightPhase(voteData){ 
@@ -48,6 +52,7 @@ function postNightPhase(voteData){
 
     dataStore.removePlayerLocally(loserIndex);
 
+    document.getElementById("notice").style.display = "none";
     if (iLost)
         dataStore.leaveGame();
     else

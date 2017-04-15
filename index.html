@@ -16,7 +16,6 @@
 
 	</head>
 	<body>
-        <!-- <button onclick="destroyRoom()"> Destroy Room </button> -->
         <div id="loginscreen">
             <img src="img/logo.png" alt="vWolf" id="loginLogo"></img>
              <form action="javascript:enterRoom();">
@@ -43,7 +42,7 @@
                         <div id="currentUser">User:</div>
                         <div id="currentRoom">Room:</div>
                         <div id="currentRole">Role: Unknown</div>
-                        <div>Leave Room</div>
+                        <div id="leaveGameButton" onclick="leaveGameRoom()">Leave Room</div>
                     </div>
                 </li>
             </ul>
@@ -71,6 +70,7 @@
                 There is already a game in this room.<br>
                 Refresh the page to go back.
             </div>
+            <div id="notice" style="display:none">Waiting...</div>
 
             <h2 id="dayHeader">Who do you think is a Werewolf?</h2>
             <h2 id="wolfHeader">Who would you like to eliminate?</h2>
