@@ -90,4 +90,3 @@ function leaveGameRoom (){
     location.reload();
     return true;
 }
-//TODO: Change all on... to event listeners

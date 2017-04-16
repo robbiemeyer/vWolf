@@ -21,15 +21,18 @@
             <img src="img/logo.png" alt="vWolf" id="loginLogo"></img>
              <form action="javascript:enterRoom();">
                 <label class="roomLabel"> UserID:
-                <input type='text' name ='user' id="userBox" class="roomInput" required/> 
+                <input type='text' name ='user' id="userBox" class="roomInput" pattern="^\w{1,12}$" 
+                    title="ID's can only contain 12 or fewer letters, numbers and underscores" required/> 
                 </label>
 
                 <label class="roomLabel"> RoomID:
-                    <input type='text' name ='room' id="roomBox" class="roomInput" required/> 
+                    <input type='text' name ='room' id="roomBox" class="roomInput" pattern="^\w{1,12}$" 
+                        title="ID's can only contain 12 or fewer letters, numbers and underscores" required/> 
                 </label>
 
                 <input type="submit" value="Enter Room" class="actionButton"/>
-            </form>
+                <div id="invalidID">ID's can only contain 12 or fewer letters, numbers and underscores</div>
+             </form>
         </div>
 
         <div id="gamescreen">
@@ -53,7 +56,7 @@
             <div id="pregamescreen">
                 <h2> Game Settings </h2>
                 <div>
-                    <button id="wolfminus" class="decbutton" onclick="changeRoleCountByButton('wolf', -1)" disabled>-</button>
+                    <button id="wolfminus" class="decbutton" onclick="changeRoleCountByButton('wolf', -1)" disabled="true">-</button>
                     <span id="wolfNumDisplay">0</span>
                     <button id="wolfplus" class="incbutton" onclick="changeRoleCountByButton('wolf', 1)">+</button>
                     Werewolves
@@ -92,5 +95,6 @@
             <h2 id="logHeader">Game Log</h2>
             <div id="gameLog"></div>
         </div>
+        <div id="copyright"> &copy 2017 Robbie Meyer</div>
     </body>
 </html>

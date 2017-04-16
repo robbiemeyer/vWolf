@@ -5,7 +5,7 @@ function enterRoom (){
     var roomID = document.getElementById("roomBox").value;
     var playerID = document.getElementById("userBox").value;
 
-    if (/^\w{1,10}$/.test(playerID) && /^\w{1,10}/.test(roomID)){
+    if (/^\w{1,12}$/.test(playerID) && /^\w{1,12}$/.test(roomID)){
 
         firebase.auth().signInAnonymously().catch(function(error) {
             console.log("Could not sign in to database: " +  error.code);
@@ -23,8 +23,7 @@ function enterRoom (){
         document.getElementById("gamescreen").style.display = "block";
     }
     else {
-        //TODO
-        console.log("Invalid IDs");
+        document.getElementById("invalidID").style.display = "block";
     }
 }
 

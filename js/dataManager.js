@@ -164,7 +164,8 @@ function dataManager (playerName, roomName){
     var activePlayers = new Array();
 
     var firstPlayer = false;
-//Start-up functionality...
+
+    //Start-up functionality...
     //Check to see if the game has already started in that room, if it has then do not join
     var firstLogin = true;
     roomRef.child("players").once("value", function(snapshot) {

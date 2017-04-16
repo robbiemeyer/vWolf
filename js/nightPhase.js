@@ -1,4 +1,3 @@
-//OK
 function showNightPhase(){
     resetRadioButtons();
     document.getElementById("dayHeader").style.display = "none";
@@ -21,16 +20,9 @@ function showNightPhase(){
         document.getElementById("wolfHeader").style.display = "block";
         document.getElementById("radioBox").style.display = "block";
         document.getElementById("nightWolfButton").style.display = "block";
-        //show wolf things
-
-        //dataStore.waitForAll("nightWait", dataStore.getNumPlayers(), postNightPhase);
-        //for (var i in activePlayers){
-        //    document.getElementById("nightBox").innerHTML += "<button id='wbutton-" + i +"' onclick='wereVote(this)'>" + activePlayers[i].name + "</button>";
-        //}
     }
 }
 
-//Change to use radio buttons
 function wereVote() {
     document.getElementById("wolfHeader").style.display = "none";
     document.getElementById("radioBox").style.display = "none";
@@ -50,7 +42,7 @@ function postNightPhase(voteData){
     if (dataStore.getPlayerName(loserIndex) === dataStore.getMyName())
         iLost = true;
 
-    dataStore.removePlayerLocally(loserIndex);
+    //dataStore.removePlayerLocally(loserIndex);
 
     document.getElementById("notice").style.display = "none";
     if (iLost)
