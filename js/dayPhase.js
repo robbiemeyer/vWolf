@@ -43,7 +43,7 @@ function postDayVote(voteData){
     console.log(dataStore.getRoleCount("wolf") );
     console.log(this.losingWolf);
 
-    if (loserIndex > 0){
+    if (loserIndex >= 0){
         addToLog("The town has spoken. " + dataStore.getPlayerName(loserIndex) + " the " + loserRole + ", your time has come.");
 
         if (loserRole === "werewolf")
