@@ -6,6 +6,9 @@ var config = {
 };
 firebase.initializeApp(config);
 
+//Shuffles an array
+//Input is an array of any length
+//Returns an array of the same length with a random order
 function shuffle (array){
     var currentIndex = array.length;
     var randomIndex;
@@ -23,6 +26,9 @@ function shuffle (array){
     return array;
 }
 
+//Updates the lists of playernames 
+//Input is an array containing all activePlayer names
+//The radioBox and activeBox elements will be changed 
 function updateNames(activePlayers) {
     activeBox = document.getElementById("activeList")
     radioBox = document.getElementById("radioBox");
@@ -36,6 +42,7 @@ function updateNames(activePlayers) {
     radioBox.innerHTML += "<input type=radio name='target' value='$null' id='noRadio'>";
 }
 
+//Returns the currently selected radio button
 function getRadioPlayerIndex(){
     var radioButtons = document.getElementsByClassName("voteRadio");
     var selected = "$null";
@@ -48,18 +55,24 @@ function getRadioPlayerIndex(){
     return selected;
 }
 
+//Resets the radio buttons to '$null'
 function resetRadioButtons(){
     document.getElementById("noRadio").checked = true;
     return true;
 }
 
+//Adds text to the gamelog and scrolls the log to the bottom
+//Input is a strong to add to the log
+//The gameLog element is modified
 function addToLog(item){
     var log = document.getElementById("gameLog");
     log.innerHTML += "<div class='logitem'>" + item + "</div>";
     log.scrollTop = log.scrollHeight - log.clientHeight;
-    return log.innerHTML;
 }
 
+//Opens and closes the game menu
+//If the menu is open it will be closed
+//If the menu is closed it will be opened
 function toggleSettingsMenu(){
     var dropdown = document.getElementById("currentSettingsDropdown");
     if (dropdown.style.display === "none"){
@@ -83,8 +96,9 @@ function toggleSettingsMenu(){
     }
 }
 
+//Leaves the game
+//All player and room references will be deleted. The page will be reloaded to reset the page.
 function leaveGameRoom (){
-    console.log("Left");
     dataStore.leavePlayer();
     dataStore.leaveRoom();
     location.reload();

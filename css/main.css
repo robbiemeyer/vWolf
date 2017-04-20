@@ -133,6 +133,7 @@ button:disabled{
     outline-style: solid;
     outline-width: 2px;
     outline-color: #eeeeee;
+    z-index: 5;
 }
 
 #currentSettingsDropdown > div {
