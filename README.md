@@ -9,9 +9,9 @@ http://www.brenbarn.net/werewolf/rules.html
 
 ## Features
 vWolf can currently:
-    - Assign players the roles of werewolf and villager
-    - Count votes
-    - Determine when the game ends
+- Assign players the roles of werewolf and villager
+- Count votes
+- Determine when the game ends
 
 vWolf does not currently implement any roles other than villager and werewolf.
 Other roles such as seer are planned. 
