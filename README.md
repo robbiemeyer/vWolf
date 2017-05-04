@@ -1,4 +1,4 @@
-#vWolf
+# vWolf
 
 vWolf is a virtual moderator for the game of werewolf. In a regular game of
 werewolf someone must sit out to moderate the game. vWolf can take this role
@@ -7,7 +7,7 @@ and allow all players to be able to participate.
 A good resource for the rules for werewolf can be found here:
 http://www.brenbarn.net/werewolf/rules.html
 
-##Features
+## Features
 vWolf can currently:
     - Assign players the roles of werewolf and villager
     - Count votes
